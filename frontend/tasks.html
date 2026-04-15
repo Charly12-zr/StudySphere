@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>StudySphere</title>
+
+<style>
+body{
+margin:0;
+font-family:Segoe UI;
+background:linear-gradient(135deg,#141e30,#243b55);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+width:450px;
+padding:30px;
+border-radius:20px;
+background:rgba(255,255,255,0.05);
+-webkit-backdrop-filter: blur(15px);
+backdrop-filter: blur(15px);
+box-shadow:0 20px 60px rgba(0,0,0,0.5);
+animation:fade 1s ease;
+}
+
+h1{text-align:center;}
+
+input{
+width:100%;
+padding:15px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+}
+
+button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:10px;
+background:linear-gradient(45deg,#00f260,#0575e6);
+color:white;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{transform:scale(1.05);}
+
+.task{
+background:#1f2937;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+animation:slide 0.4s ease;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;}
+}
+
+@keyframes slide{
+from{opacity:0;transform:translateX(-30px);}
+to{opacity:1;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h1>Mes tâches 🚀</h1>
+
+<input id="taskInput" placeholder="Nouvelle tâche">
+<button type="button" onclick="addTask()">Ajouter</button>
+
+<div id="tasks"></div>
+</div>
+
+<script>
+
+const token = localStorage.getItem("token");
+
+// LOAD
+async function loadTasks(){
+const res = await fetch("http://localhost:3000/tasks",{
+headers:{Authorization:token}
+});
+const data = await res.json();
+
+const container = document.getElementById("tasks");
+container.innerHTML="";
+
+data.forEach(t=>{
+container.innerHTML += <div class="task">${t.title}</div>;
+});
+}
+
+// ADD
+async function addTask(){
+const input = document.getElementById("taskInput");
+
+await fetch("http://localhost:3000/tasks",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:token
+},
+body:JSON.stringify({title:input.value})
+});
+
+input.value="";
+loadTasks();
+}
+
+loadTasks();
+
+</script>
+
+</body>
+</html>

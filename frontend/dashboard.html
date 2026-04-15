@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+min-height:100vh;
+background:linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#ff00cc);
+background-size:400% 400%;
+animation:grad 10s ease infinite;
+color:white;
+}
+
+@keyframes grad{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.container{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+padding:20px;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+padding:20px;
+border-radius:20px;
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+}
+
+button{
+background:linear-gradient(45deg,#00f260,#0575e6);
+color:white;
+cursor:pointer;
+}
+
+.task{
+padding:10px;
+margin-top:10px;
+background:rgba(0,0,0,0.4);
+border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+<h3>Profil</h3>
+<img id="avatar" style="width:80px;border-radius:50%">
+<p id="name"></p>
+<p id="bio"></p>
+
+<input id="bioInput" placeholder="bio">
+<input id="avatarInput" placeholder="avatar url">
+<button onclick="update()">Update</button>
+</div>
+
+<div class="card">
+<h3>Tasks</h3>
+<input id="taskInput">
+<button onclick="add()">Add</button>
+<div id="tasks"></div>
+</div>
+
+</div>
+
+<script>
+
+const token = localStorage.getItem("token");
+if(!token) location.href="auth.html";
+
+async function loadProfile(){
+const res = await fetch("http://localhost:3000/profile",{headers:{Authorization:token}});
+const d = await res.json();
+
+name.innerText = d.username;
+bio.innerText = d.bio;
+avatar.src = d.avatar || "https://i.imgur.com/0y0y0y0.png";
+}
+
+async function update(){
+await fetch("http://localhost:3000/profile",{
+method:"PUT",
+headers:{
+"Content-Type":"application/json",
+Authorization:token
+},
+body:JSON.stringify({
+bio:bioInput.value,
+avatar:avatarInput.value
+})
+});
+
+loadProfile();
+}
+
+async function loadTasks(){
+const res = await fetch("http://localhost:3000/tasks",{headers:{Authorization:token}});
+const d = await res.json();
+
+tasks.innerHTML="";
+d.forEach(t=>{
+tasks.innerHTML += <div class="task">${t.title}</div>;
+});
+}
+
+async function add(){
+await fetch("http://localhost:3000/tasks",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:token
+},
+body:JSON.stringify({title:taskInput.value})
+});
+
+taskInput.value="";
+loadTasks();
+}
+
+loadProfile();
+loadTasks();
+
+</script>
+
+</body>
+</html>

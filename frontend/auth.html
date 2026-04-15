@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Auth</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(-45deg,#0f0c29,#302b63,#ff00cc,#24243e);
+background-size:400% 400%;
+animation:grad 10s ease infinite;
+color:white;
+}
+
+@keyframes grad{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.card{
+width:700px;
+display:flex;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+border-radius:20px;
+overflow:hidden;
+}
+
+.left{
+flex:1;
+padding:30px;
+}
+
+.right{
+flex:1;
+padding:30px;
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+}
+
+button{
+background:linear-gradient(45deg,#00f260,#0575e6);
+color:white;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="left">
+<h2>StudySphere 🚀</h2>
+<p>Connecte ou crée ton compte</p>
+</div>
+
+<div class="right">
+
+<h3>Login</h3>
+<input id="l1" placeholder="username">
+<input id="l2" type="password" placeholder="password">
+<button onclick="login()">Login</button>
+
+<hr>
+
+<h3>Register</h3>
+<input id="r1" placeholder="username">
+<input id="r2" type="password" placeholder="password">
+<button onclick="register()">Register</button>
+
+</div>
+
+</div>
+
+<script>
+
+async function register(){
+await fetch("http://localhost:3000/register",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:r1.value,password:r2.value})
+});
+alert("Compte créé");
+}
+
+async function login(){
+const res = await fetch("http://localhost:3000/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:l1.value,password:l2.value})
+});
+
+const data = await res.json();
+
+localStorage.setItem("token",data.token);
+window.location.href="dashboard.html";
+}
+
+</script>
+
+</body>
+</html>
