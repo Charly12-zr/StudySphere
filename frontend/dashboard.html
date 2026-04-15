@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+min-height:100vh;
+background:linear-gradient(-45deg,#000428,#004e92,#00c6ff,#0072ff);
+background-size:400% 400%;
+animation:gradient 10s ease infinite;
+color:white;
+overflow:hidden;
+}
+
+@keyframes gradient{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+header{
+padding:20px;
+font-size:20px;
+display:flex;
+justify-content:space-between;
+}
+
+.container{
+padding:30px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:20px;
+}
+
+.card{
+padding:20px;
+border-radius:20px;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+animation:float 3s infinite ease-in-out;
+}
+
+@keyframes float{
+0%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+100%{transform:translateY(0);}
+}
+
+input,button{
+padding:12px;
+border:none;
+border-radius:10px;
+margin-top:10px;
+width:100%;
+}
+
+button{
+background:linear-gradient(45deg,#00f260,#0575e6);
+color:white;
+cursor:pointer;
+}
+
+.task{
+background:#111;
+padding:10px;
+margin-top:10px;
+border-radius:10px;
+animation:slide 0.4s ease;
+}
+
+@keyframes slide{
+from{opacity:0;transform:translateX(-20px);}
+to{opacity:1;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div>StudySphere 🚀 | Smart Dashboard</div>
+<div onclick="logout()" style="cursor:pointer;">Logout</div>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>Ajouter tâche</h3>
+<input id="taskInput">
+<button onclick="addTask()">Ajouter</button>
+</div>
+
+<div class="card">
+<h3>Mes tâches intelligentes 🚀</h3>
+<div id="tasks"></div>
+</div>
+
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+
+async function load(){
+const res = await fetch("http://localhost:3000/tasks",{headers:{Authorization:token}});
+const data = await res.json();
+
+tasks.innerHTML = "";
+data.forEach(t=>{
+tasks.innerHTML += <div class="task">${t.title}</div>;
+});
+}
+
+async function addTask(){
+await fetch("http://localhost:3000/tasks",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:token
+},
+body:JSON.stringify({title:taskInput.value})
+});
+
+taskInput.value="";
+load();
+}
+
+function logout(){
+localStorage.clear();
+location.href="auth.html";
+}
+
+load();
+</script>
+
+<!-- VERSION 2 DASHBOARD -->
+
+</body>
+</html>

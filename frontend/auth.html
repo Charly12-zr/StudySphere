@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Auth</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+min-height:100vh;
+background:linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#ff00cc);
+background-size:400% 400%;
+animation:gradient 10s ease infinite;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+@keyframes gradient{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.container{
+display:flex;
+gap:30px;
+}
+
+.card{
+width:300px;
+padding:25px;
+border-radius:20px;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:linear-gradient(45deg,#00f260,#0575e6);
+color:white;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+<h2>Login 🔐</h2>
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<div class="card">
+<h2>Créer ton compte StudySphere ✨</h2>
+<input id="regUser" placeholder="Username">
+<input id="regPass" type="password" placeholder="Password">
+<button onclick="register()">Register</button>
+</div>
+
+</div>
+
+<script>
+
+async function register(){
+await fetch("http://localhost:3000/register",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+username:regUser.value,
+password:regPass.value
+})
+});
+alert("Compte créé 🚀");
+}
+
+async function login(){
+const res = await fetch("http://localhost:3000/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+username:loginUser.value,
+password:loginPass.value
+})
+});
+
+const data = await res.json();
+localStorage.setItem("token",data.token);
+location.href="dashboard.html";
+}
+
+</script>
+
+<p style="text-align:center;font-size:12px;">Powered by StudySphere</p>
+
+<!-- VERSION 2 AUTH PAGE -->
+
+</body>
+</html>
