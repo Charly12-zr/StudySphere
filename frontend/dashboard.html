@@ -9,38 +9,53 @@ body{
 margin:0;
 font-family:Arial;
 min-height:100vh;
-background:linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#ff00cc);
+background:linear-gradient(-45deg,#000428,#004e92,#00c6ff,#0072ff);
 background-size:400% 400%;
-animation:grad 10s ease infinite;
+animation:gradient 10s ease infinite;
 color:white;
+overflow:hidden;
 }
 
-@keyframes grad{
+@keyframes gradient{
 0%{background-position:0% 50%}
 50%{background-position:100% 50%}
 100%{background-position:0% 50%}
 }
 
-.container{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
+header{
 padding:20px;
+font-size:20px;
+display:flex;
+justify-content:space-between;
+}
+
+.container{
+padding:30px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:20px;
 }
 
 .card{
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(20px);
 padding:20px;
 border-radius:20px;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+animation:float 3s infinite ease-in-out;
+}
+
+@keyframes float{
+0%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+100%{transform:translateY(0);}
 }
 
 input,button{
-width:100%;
 padding:12px;
-margin-top:10px;
 border:none;
 border-radius:10px;
+margin-top:10px;
+width:100%;
 }
 
 button{
@@ -50,79 +65,56 @@ cursor:pointer;
 }
 
 .task{
+background:#111;
 padding:10px;
 margin-top:10px;
-background:rgba(0,0,0,0.4);
 border-radius:10px;
+animation:slide 0.4s ease;
+}
+
+@keyframes slide{
+from{opacity:0;transform:translateX(-20px);}
+to{opacity:1;}
 }
 </style>
 </head>
 
 <body>
 
+<header>
+<div>StudySphere 🚀 | Smart Dashboard</div>
+<div onclick="logout()" style="cursor:pointer;">Logout</div>
+</header>
+
 <div class="container">
 
 <div class="card">
-<h3>Profil</h3>
-<img id="avatar" style="width:80px;border-radius:50%">
-<p id="name"></p>
-<p id="bio"></p>
-
-<input id="bioInput" placeholder="bio">
-<input id="avatarInput" placeholder="avatar url">
-<button onclick="update()">Update</button>
+<h3>Ajouter tâche</h3>
+<input id="taskInput">
+<button onclick="addTask()">Ajouter</button>
 </div>
 
 <div class="card">
-<h3>mes taches intelligentes</h3>
-<input id="taskInput">
-<button onclick="add()">Add</button>
+<h3>Mes tâches intelligentes 🚀</h3>
 <div id="tasks"></div>
 </div>
 
 </div>
 
 <script>
-
 const token = localStorage.getItem("token");
-if(!token) location.href="auth.html";
 
-async function loadProfile(){
-const res = await fetch("http://localhost:3000/profile",{headers:{Authorization:token}});
-const d = await res.json();
-
-name.innerText = d.username;
-bio.innerText = d.bio;
-avatar.src = d.avatar || "https://i.imgur.com/0y0y0y0.png";
-}
-
-async function update(){
-await fetch("http://localhost:3000/profile",{
-method:"PUT",
-headers:{
-"Content-Type":"application/json",
-Authorization:token
-},
-body:JSON.stringify({
-bio:bioInput.value,
-avatar:avatarInput.value
-})
-});
-
-loadProfile();
-}
-
-async function loadTasks(){
+async function load(){
 const res = await fetch("http://localhost:3000/tasks",{headers:{Authorization:token}});
-const d = await res.json();
+const data = await res.json();
 
-tasks.innerHTML="";
-d.forEach(t=>{
+tasks.innerHTML = "";
+data.forEach(t=>{
 tasks.innerHTML += <div class="task">${t.title}</div>;
 });
 }
 
-async function add(){
+async function addTask(){
 await fetch("http://localhost:3000/tasks",{
 method:"POST",
 headers:{
@@ -133,13 +125,18 @@ body:JSON.stringify({title:taskInput.value})
 });
 
 taskInput.value="";
-loadTasks();
+load();
 }
 
-loadProfile();
-loadTasks();
+function logout(){
+localStorage.clear();
+location.href="auth.html";
+}
 
+load();
 </script>
+
+<!-- VERSION 2 DASHBOARD -->
 
 </body>
 </html>
